@@ -17,6 +17,11 @@ class ViewController: UIViewController {
         createEx1()
         createColdObservableEx()
         createHotObservableEx()
+        createPublishSubjectEx()
+        createBehaviorSubjectEx()
+        createReplaySubjectEx()
+        createAsyncSubjectEx1()
+        createAsyncSubjectEx2()
     }
 
     private func createEx1() {
@@ -77,5 +82,72 @@ class ViewController: UIViewController {
         observable.onCompleted()
     }
 
+    private func createPublishSubjectEx() {
+        let subject = PublishSubject<String>()
+
+        subject.onNext("You can't see this message")
+        
+        subject.subscribe(onNext: { response in
+            print("PublishSubject: \(response)")
+        })
+        .disposed(by: disposeBag)
+
+        subject.onNext("PublishSubject response 1")
+        subject.onNext("PublishSubject response 2")
+    }
+    
+    private func createBehaviorSubjectEx() {
+        let subject = BehaviorSubject(value: "BehaviorSubject Init")
+        
+        subject.onNext("You can see this message")
+        
+        subject.subscribe(onNext: { response in
+            print("PublishSubject: \(response)")
+        })
+        .disposed(by: disposeBag)
+        
+        subject.onNext("response 1")
+        subject.onNext("response 2")
+    }
+    
+    private func createReplaySubjectEx() {
+        let subject = ReplaySubject<String>.create(bufferSize: 2)
+
+        subject.onNext("Event 1")
+        subject.onNext("Event 2")
+        subject.onNext("Event 3")
+
+        subject.subscribe(onNext: { response in
+            print("ReplaySubject: \(response)")
+        })
+        .disposed(by: disposeBag)
+    }
+    
+    private func createAsyncSubjectEx1() {
+        let subject = AsyncSubject<String>()
+        
+        subject.onNext("Event 1")
+        
+        subject.subscribe(onNext: { response in
+            print("ReplaySubject Ex1 : \(response)")
+        }).disposed(by: disposeBag)
+        
+        subject.onNext("Event 2")
+        subject.onNext("Event 3")
+        
+        subject.onCompleted()
+    }
+    
+    private func createAsyncSubjectEx2() {
+        let subject = AsyncSubject<String>()
+        
+        subject.onNext("Event 1")
+        
+        subject.subscribe(onNext: { response in
+            print("ReplaySubject Ex2: \(response)")
+        }).disposed(by: disposeBag)
+        
+        subject.onCompleted()
+    }
 }
 
