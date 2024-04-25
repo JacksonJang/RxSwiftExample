@@ -17,11 +17,18 @@ class ViewController: UIViewController {
         createEx1()
         createColdObservableEx()
         createHotObservableEx()
+        
         createPublishSubjectEx()
         createBehaviorSubjectEx()
         createReplaySubjectEx()
         createAsyncSubjectEx1()
         createAsyncSubjectEx2()
+        
+        create_merge_Operator()
+        create_concat_Operator()
+        create_combineLatest_Operator()
+        create_zip_Operator()
+        create_amb_Operator()
     }
 
     private func createEx1() {
@@ -148,6 +155,101 @@ class ViewController: UIViewController {
         }).disposed(by: disposeBag)
         
         subject.onCompleted()
+    }
+    
+    private func create_merge_Operator() {
+        let subject1 = PublishSubject<String>()
+        let subject2 = PublishSubject<String>()
+        
+        let observables = Observable.of(subject1, subject2)
+        
+        observables.merge()
+            .subscribe(onNext: {
+                print("merge : \($0)")
+            })
+            .disposed(by: disposeBag)
+        
+        subject1.onNext("subject1")
+        subject2.onNext("subject2")
+        subject1.onNext("subject1-1")
+        subject2.onNext("subject2-1")
+        subject1.onNext("subject1-2")
+        subject2.onNext("subject2-2")
+    }
+    
+    private func create_concat_Operator() {
+        let subject1 = PublishSubject<String>()
+        let subject2 = PublishSubject<String>()
+        
+        subject1.concat(subject2)
+            .subscribe(onNext: {
+                print("concat response : \($0)")
+            })
+            .disposed(by: disposeBag)
+        
+        subject1.onNext("subject1")
+        subject2.onNext("subject2")
+        subject1.onNext("subject1-1")
+        subject2.onNext("subject2-1")
+        subject1.onNext("subject1-2")
+        
+        subject1.onCompleted()
+        subject2.onNext("subject2-2")
+    }
+    
+    private func create_combineLatest_Operator() {
+        let subject1 = PublishSubject<String>()
+        let subject2 = PublishSubject<String>()
+        
+        Observable.combineLatest(subject1, subject2) { value1, value2 in
+            return "\(value1) + \(value2)"
+        }.subscribe(onNext: {
+            print("combineLatest : \($0)")
+        })
+        .disposed(by: disposeBag)
+        
+        subject1.onNext("subject1")
+        subject2.onNext("subject2")
+        subject1.onNext("subject1-1")
+        subject2.onNext("subject2-1")
+        subject1.onNext("subject1-2")
+        subject1.onNext("subject1-3")
+        subject2.onNext("subject2-2")
+    }
+
+    private func create_zip_Operator() {
+        let subject1 = PublishSubject<String>()
+        let subject2 = PublishSubject<String>()
+        
+        Observable.zip(subject1, subject2) { value1, value2 in
+                return "\(value1) - \(value2)"
+            }
+            .subscribe(onNext: {
+                print("zip : \($0)")
+            })
+            .disposed(by: disposeBag)
+        
+        subject1.onNext("subject1")
+        subject2.onNext("subject2")
+        subject1.onNext("subject1-1")
+        subject2.onNext("subject2-1")
+        subject1.onNext("subject1-2")
+    }
+    
+    private func create_amb_Operator() {
+        let subject1 = PublishSubject<String>()
+        let subject2 = PublishSubject<String>()
+        
+        subject1.amb(subject2)
+            .subscribe(onNext: {
+                print("amb response : \($0)")
+            })
+            .disposed(by: disposeBag)
+        
+        subject1.onNext("amb subject1")
+        subject2.onNext("amb subject2")
+        subject1.onNext("amb subject1")
+        subject2.onNext("amb subject2")
     }
 }
 
